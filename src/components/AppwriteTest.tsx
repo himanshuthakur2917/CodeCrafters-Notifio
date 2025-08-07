@@ -192,21 +192,65 @@ export const AppwriteTest = () => {
         <button
           onClick={async () => {
             setLoading(true);
+            setDebugInfo(null);
+            
+            const tests = [
+              { name: 'Google DNS', url: 'https://8.8.8.8/' },
+              { name: 'Cloudflare', url: 'https://1.1.1.1/' },
+              { name: 'GitHub', url: 'https://api.github.com/' },
+              { name: 'Appwrite Health', url: 'https://cloud.appwrite.io/v1/health' }
+            ];
+            
+            let results = [];
+            let workingCount = 0;
+            
+            for (const test of tests) {
+              try {
+                console.log(`Testing ${test.name}...`);
+                const response = await fetch(test.url, {
+                  method: 'GET',
+                  mode: 'no-cors' // This bypasses CORS for basic connectivity
+                });
+                results.push(`✅ ${test.name}: Reachable (${response.type})`);
+                workingCount++;
+              } catch (error: any) {
+                results.push(`❌ ${test.name}: ${error.message}`);
+                console.error(`${test.name} failed:`, error);
+              }
+            }
+            
+            // Now test Appwrite properly
             try {
               const response = await fetch('https://cloud.appwrite.io/v1/health', {
                 method: 'GET'
               });
+              results.push(`\n🔍 Appwrite Detailed Test:`);
+              results.push(`Status: ${response.status} ${response.statusText}`);
+              results.push(`Type: ${response.type}`);
+              results.push(`Headers OK: ${response.headers ? 'Yes' : 'No'}`);
+              
               if (response.ok) {
                 const text = await response.text();
-                setTestResult(`✅ Basic connectivity works perfectly!\nStatus: ${response.status}\nAppwrite is reachable!`);
-              } else {
-                setTestResult(`✅ Network works but got HTTP ${response.status}\nThis means Appwrite servers are reachable!\nThe 'failed to fetch' error is solved.`);
+                results.push(`Response: ${text.substring(0, 100)}...`);
               }
             } catch (error: any) {
-              setTestResult(`❌ Basic connectivity failed: ${error.message}\nThis would be a real network issue.`);
-            } finally {
-              setLoading(false);
+              results.push(`\n❌ Appwrite Direct Test Failed:`);
+              results.push(`Error: ${error.message}`);
+              results.push(`Name: ${error.name}`);
+              results.push(`Stack: ${error.stack?.substring(0, 200)}...`);
             }
+            
+            setTestResult(`Network Diagnostics (${workingCount}/${tests.length} working):\n\n${results.join('\n')}`);
+            
+            setDebugInfo({
+              type: 'network_diagnostics',
+              workingCount,
+              totalTests: tests.length,
+              userAgent: navigator.userAgent,
+              location: window.location.href
+            });
+            
+            setLoading(false);
           }}
           disabled={loading}
           className="w-full px-3 py-2 bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded text-sm font-mono hover:bg-purple-500/30 disabled:opacity-50"
