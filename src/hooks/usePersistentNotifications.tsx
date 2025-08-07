@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import React from 'react';
 import { Event } from '@/types/event';
 import { toast } from 'react-hot-toast';
 

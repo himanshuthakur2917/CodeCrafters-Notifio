@@ -317,7 +317,7 @@ export default function Events() {
                   </div>
                   
                   {view === 'upcoming' && (
-                    <>
+                    <React.Fragment>
                       <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
                       <span className="text-cyan-300 font-mono font-medium">
                         DISPLAYING {filteredEvents.length} EVENTS
@@ -325,16 +325,16 @@ export default function Events() {
                       <span className="text-cyan-400/60 text-sm font-mono">
                         [{filter.toUpperCase()} MODE]
                       </span>
-                    </>
+                    </React.Fragment>
                   )}
                   
                   {view === 'completed' && (
-                    <>
+                    <React.Fragment>
                       <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                       <span className="text-green-300 font-mono font-medium">
                         ARCHIVED EVENTS: {completedEvents.length}
                       </span>
-                    </>
+                    </React.Fragment>
                   )}
                 </div>
                 <button
