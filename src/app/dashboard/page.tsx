@@ -15,14 +15,12 @@ import {
   MobileNavToggle
 } from '@/components/ResizableNavbar';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import React from 'react';
-import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { WavyBackground } from '@/components/Hero';
-
-export default function Home() {
+export default function Dashboard() {
   const { isAuthenticated, user, logout, loading } = useAuth();
   const router = useRouter();
   
@@ -67,7 +65,7 @@ export default function Home() {
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-32 w-32 border-4 border-cyan-400 border-t-transparent"></div>
-          <div className="mt-4 text-cyan-300 font-mono">INITIALIZING NOTIFIO...</div>
+          <div className="mt-4 text-cyan-300 font-mono">INITIALIZING DASHBOARD...</div>
         </div>
       </div>
     );
@@ -107,11 +105,10 @@ export default function Home() {
           </div>
 
           {/* Navigation Items */}
-          <NavItems items={navItems} className=" text-white hover:text-white" />
+          <NavItems items={navItems} className="text-cyan-300 hover:text-white" />
 
           {/* Right Side */}
           <div className="flex items-center space-x-4 relative z-50">
-
             <div className="flex items-center space-x-2 text-sm text-cyan-400">
               <span>Welcome, {user?.name}</span>
             </div>
@@ -183,27 +180,39 @@ export default function Home() {
           </MobileNavMenu>
         </MobileNav>
       </Navbar>
-
-      <main className="relative z-10 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto h-full">
-          {/* Hero Section */}
-          <div className="text-center relative mb-16 h-screen flex justify-center items-center flex-col">
-            
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              <span className="text-white">NEVER</span>
-              <span className="block text-white animate-pulse">
-                MISS EVENTS
+      
+      <main className="relative z-10 pt-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Dashboard Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+              <span className="text-white">MISSION</span>
+              <span className="block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent animate-pulse">
+                CONTROL CENTER
               </span>
-            </h2>
-            <p className="text-xl text-blue-200/80 max-w-3xl mx-auto mb-8 font-light">
-              Effortlessly Keep Track of your Important Dates and Deadlines with NOTIFIO
+            </h1>
+            <p className="text-lg text-blue-200/80 max-w-2xl mx-auto mb-6 font-light">
+              Your centralized command hub for temporal event management
               <span className="block text-cyan-400/70 text-base mt-2 font-mono">
-                 Stay Organized and Stress Free, Every Day
+                // Real-time monitoring and alerts active
               </span>
             </p>
             
             {/* System Status */}
-            
+            <div className="flex items-center justify-center space-x-6 text-sm font-mono">
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-green-400">SYSTEM ONLINE</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                <span className="text-blue-400">SYNC ACTIVE</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                <span className="text-purple-400">AI READY</span>
+              </div>
+            </div>
           </div>
 
           {/* Stats Bar */}
@@ -267,13 +276,30 @@ export default function Home() {
                 getTimeUntilEvent={getTimeUntilEvent}
               />
               
-              {/* Event List */}
-              <EventList 
-                events={upcomingEvents}
-                eventsWithin24Hours={eventsWithin24Hours}
-                onDeleteEvent={deleteEvent}
-                getTimeUntilEvent={getTimeUntilEvent}
-              />
+              {/* Recent Events List */}
+              <div className="bg-slate-900/80 backdrop-blur-xl border border-cyan-500/20 rounded-2xl p-6 shadow-2xl shadow-cyan-500/10">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-3 font-mono">
+                  <span className="text-cyan-400">📋</span>
+                  RECENT EVENTS
+                  <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                </h3>
+                <EventList 
+                  events={upcomingEvents.slice(0, 5)} // Show only first 5 events
+                  eventsWithin24Hours={eventsWithin24Hours}
+                  onDeleteEvent={deleteEvent}
+                  getTimeUntilEvent={getTimeUntilEvent}
+                />
+                {upcomingEvents.length > 5 && (
+                  <div className="mt-4 text-center">
+                    <button
+                      onClick={() => router.push('/events')}
+                      className="px-6 py-2 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 text-cyan-300 rounded-xl font-mono font-medium hover:from-cyan-500/30 hover:to-blue-500/30 transition-all"
+                    >
+                      VIEW ALL EVENTS ({upcomingEvents.length})
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
             
             {/* Right Column */}
@@ -288,51 +314,49 @@ export default function Home() {
                 <div className="space-y-4 text-sm">
                   <div className="flex items-start gap-3 p-3 bg-purple-500/5 border border-purple-500/10 rounded-lg">
                     <span className="text-cyan-400 mt-0.5 font-mono">[01]</span>
-                    <span className="text-blue-200">Enable neural link notifications for instant alerts</span>
+                    <span className="text-blue-200">Neural link notifications for instant alerts</span>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-purple-500/5 border border-purple-500/10 rounded-lg">
                     <span className="text-cyan-400 mt-0.5 font-mono">[02]</span>
-                    <span className="text-blue-200">Critical events trigger visual cortex enhancements</span>
+                    <span className="text-blue-200">Critical events trigger visual enhancements</span>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-purple-500/5 border border-purple-500/10 rounded-lg">
                     <span className="text-cyan-400 mt-0.5 font-mono">[03]</span>
-                    <span className="text-blue-200">Audio frequencies adapt to threat assessment</span>
+                    <span className="text-blue-200">Audio frequencies adapt to threat level</span>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-purple-500/5 border border-purple-500/10 rounded-lg">
                     <span className="text-cyan-400 mt-0.5 font-mono">[04]</span>
-                    <span className="text-blue-200">Quantum storage maintains temporal integrity</span>
+                    <span className="text-blue-200">Quantum storage maintains data integrity</span>
                   </div>
+                </div>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="bg-slate-900/80 backdrop-blur-xl border border-green-500/20 rounded-2xl p-6 shadow-2xl shadow-green-500/10">
+                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-3 font-mono">
+                  <span className="text-green-400">⚙️</span>
+                  QUICK ACTIONS
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                </h3>
+                <div className="space-y-3">
+                  <button
+                    onClick={() => setIsAddEventModalOpen(true)}
+                    className="w-full px-4 py-3 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 text-cyan-300 rounded-xl font-mono font-medium hover:from-cyan-500/30 hover:to-blue-500/30 transition-all"
+                  >
+                    [CREATE_EVENT] +
+                  </button>
+                  <button
+                    onClick={() => router.push('/events')}
+                    className="w-full px-4 py-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 text-purple-300 rounded-xl font-mono font-medium hover:from-purple-500/30 hover:to-pink-500/30 transition-all"
+                  >
+                    [VIEW_EVENTS] 📊
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="relative z-10 mt-16 bg-black/80 backdrop-blur-xl border-t border-cyan-500/20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center text-cyan-400/60 text-sm font-mono">
-            <p className="mb-4">
-              <span className="text-purple-400">[NEXUS_CORE]</span> 
-              Built with quantum architecture using Next.js, TypeScript, and Tailwind CSS
-            </p>
-            <div className="flex items-center justify-center gap-6 mb-4">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                <span className="text-green-400">NEURAL LINK ACTIVE</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
-                <span className="text-blue-400">SYNC PROTOCOL ENABLED</span>
-              </div>
-            </div>
-            <p className="text-xs text-slate-500">
-              // Temporal coordination system v2.0.47 • Quantum encryption active
-            </p>
-          </div>
-        </div>
-      </footer>
 
       {/* Floating Add Event Button */}
       <button
