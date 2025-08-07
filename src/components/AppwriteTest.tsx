@@ -174,6 +174,54 @@ export const AppwriteTest = () => {
 
       <div className="space-y-2">
         <button
+          onClick={async () => {
+            setLoading(true);
+            setTestResult('Checking CORS configuration...');
+            
+            // Test if CORS is the issue by using different approaches
+            const tests = [];
+            
+            // Test 1: Basic fetch (will fail due to CORS)
+            try {
+              const response = await fetch('https://cloud.appwrite.io/v1/health');
+              tests.push('✅ Direct fetch works');
+            } catch (error: any) {
+              tests.push(`❌ Direct fetch: ${error.message}`);
+            }
+            
+            // Test 2: With no-cors mode (should work but limited response)
+            try {
+              const response = await fetch('https://cloud.appwrite.io/v1/health', {
+                mode: 'no-cors'
+              });
+              tests.push(`✅ No-CORS fetch: ${response.type} response`);
+            } catch (error: any) {
+              tests.push(`❌ No-CORS fetch: ${error.message}`);
+            }
+            
+            // Check current domain
+            const currentDomain = window.location.hostname;
+            tests.push(``);
+            tests.push(`🌐 Current domain: ${currentDomain}`);
+            tests.push(`🌐 Full URL: ${window.location.href}`);
+            tests.push(``);
+            tests.push('📝 CORS Solution:');
+            tests.push('1. In Appwrite Console → Settings → Platforms');
+            tests.push('2. Add Web Platform with hostname:');
+            tests.push(`   ${currentDomain}`);
+            tests.push('3. Wait 5-10 minutes for propagation');
+            tests.push('4. Make sure Project ID is correct');
+            
+            setTestResult(tests.join('\n'));
+            setLoading(false);
+          }}
+          disabled={loading}
+          className="w-full px-3 py-2 bg-orange-500/20 border border-orange-500/30 text-orange-300 rounded text-sm font-mono hover:bg-orange-500/30 disabled:opacity-50"
+        >
+          {loading ? 'Testing...' : 'Test CORS Issue'}
+        </button>
+        
+        <button
           onClick={testConnection}
           disabled={loading}
           className="w-full px-3 py-2 bg-blue-500/20 border border-blue-500/30 text-blue-300 rounded text-sm font-mono hover:bg-blue-500/30 disabled:opacity-50"
