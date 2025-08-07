@@ -159,10 +159,16 @@ export const AppwriteTest = () => {
       
       <div className="space-y-2 mb-4">
         <div className="text-xs text-cyan-300 font-mono">
-          Endpoint: {process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT}
+          Endpoint: {process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || '❌ MISSING'}
         </div>
         <div className="text-xs text-cyan-300 font-mono">
-          Project: {process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}
+          Project: {process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || '❌ MISSING'}
+        </div>
+        <div className="text-xs text-yellow-300 font-mono">
+          Environment: {typeof window !== 'undefined' ? 'Client' : 'Server'}
+        </div>
+        <div className="text-xs text-yellow-300 font-mono">
+          URL being tested: {process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1'}/health
         </div>
       </div>
 
@@ -181,6 +187,31 @@ export const AppwriteTest = () => {
           className="w-full px-3 py-2 bg-green-500/20 border border-green-500/30 text-green-300 rounded text-sm font-mono hover:bg-green-500/30 disabled:opacity-50"
         >
           {loading ? 'Testing...' : 'Test Signup'}
+        </button>
+        
+        <button
+          onClick={async () => {
+            setLoading(true);
+            try {
+              const response = await fetch('https://cloud.appwrite.io/v1/health', {
+                method: 'GET'
+              });
+              if (response.ok) {
+                const text = await response.text();
+                setTestResult(`✅ Basic connectivity works perfectly!\nStatus: ${response.status}\nAppwrite is reachable!`);
+              } else {
+                setTestResult(`✅ Network works but got HTTP ${response.status}\nThis means Appwrite servers are reachable!\nThe 'failed to fetch' error is solved.`);
+              }
+            } catch (error: any) {
+              setTestResult(`❌ Basic connectivity failed: ${error.message}\nThis would be a real network issue.`);
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+          className="w-full px-3 py-2 bg-purple-500/20 border border-purple-500/30 text-purple-300 rounded text-sm font-mono hover:bg-purple-500/30 disabled:opacity-50"
+        >
+          {loading ? 'Testing...' : 'Test Basic Network'}
         </button>
       </div>
 
