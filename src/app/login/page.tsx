@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { AppwriteTest } from "@/components/AppwriteTest";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -51,6 +52,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      <AppwriteTest />
       <div className="shadow-input mx-auto w-full max-w-md rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-blue-500/20 p-8">
         <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-500 bg-clip-text text-transparent">
           Welcome Back
